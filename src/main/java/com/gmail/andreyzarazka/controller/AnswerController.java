@@ -2,32 +2,26 @@ package com.gmail.andreyzarazka.controller;
 
 import com.gmail.andreyzarazka.domain.Answer;
 import com.gmail.andreyzarazka.service.AnswerService;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
-@Controller
+@RestController
 public class AnswerController {
-    private final AnswerService answerService;
+    private final AnswerService service;
 
-    public AnswerController(AnswerService answerService) {
-        this.answerService = answerService;
+    public AnswerController(AnswerService service) {
+        this.service = service;
     }
 
-    @GetMapping
-    public String main() {
-        return "main";
-    }
+    @PostMapping("api/parse")
+    public ResponseEntity<?> parse(@RequestBody int dec) {
+        service.calculate(dec);
 
-    @PostMapping()
-    public String add(@RequestParam(name = "dec", required = false, defaultValue = "0") int dec, Map<String, Object> model) {
-        answerService.calculate(dec);
+        Answer answer = service.getAnswer();
 
-        Answer answer = answerService.getAnswer();
-
-        model.put("answers", answer);
-
-        return "main";
+        return new ResponseEntity<>(answer, HttpStatus.OK);
     }
 }
